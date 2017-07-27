@@ -20,14 +20,14 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
 Source1: LICENSE
 Requires: scl-utils
 Requires: %{?scl_prefix}mariadb-server
-BuildRequires: scl-utils-build help2man
+BuildRequires: scl-utils-build help2man scl-utils-build-helpers
 
 %description
 This is the main package for %{scl} Software Collection, which installs
@@ -54,7 +54,7 @@ Package shipping essential scripts to work with %{scl} Software Collection.
 %package build
 Summary: Package shipping basic build configuration
 Group: Applications/File
-Requires: scl-utils-build
+Requires: scl-utils-build scl-utils-build-helpers
 
 %description build
 Package shipping essential configuration macros to build %{scl} Software
@@ -66,6 +66,16 @@ Summary: Package shipping development files for %{scl}
 %description scldevel
 Package shipping development files, especially usefull for development of
 packages depending on %{scl} Software Collection.
+
+%if 0%{?scl_syspaths_metapackage:1}
+%scl_syspaths_metapackage
+Requires: %{?scl_prefix}mariadb-syspaths
+Requires: %{?scl_prefix}mariadb-config-syspaths
+Requires: %{?scl_prefix}mariadb-server-syspaths
+Requires: %{?scl_prefix}mariadb-server-galera-syspaths
+
+%scl_syspaths_metapackage_description
+%endif
 
 %prep
 %setup -c -T
@@ -166,7 +176,12 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %doc LICENSE
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
+%{?scl_syspaths_metapackage:%files syspaths}
+
 %changelog
+* Thu Jun 22 2017 Honza Horak <hhorak@redhat.com> - 3.0-3
+- Add syspath subpackage
+
 * Mon Jun 05 2017 Honza Horak <hhorak@redhat.com> - 3.0-2
 - Fix XDG_DATA_DIRS definition
 
