@@ -20,7 +20,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -72,7 +72,7 @@ packages depending on %{scl} Software Collection.
 Requires: %{?scl_prefix}mariadb-syspaths
 Requires: %{?scl_prefix}mariadb-config-syspaths
 Requires: %{?scl_prefix}mariadb-server-syspaths
-Requires: %{?scl_prefix}mariadb-server-galera-syspaths
+Requires: %{?scl_prefix}mariadb-server-utils-syspaths
 
 %scl_syspaths_metapackage_description
 %endif
@@ -179,6 +179,10 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{?scl_syspaths_metapackage:%files syspaths}
 
 %changelog
+* Fri Jun 23 2017 Honza Horak <hhorak@redhat.com> - 3.0-4
+- Require mariadb-server-utils-syspaths but not mariadb-server-galera-syspaths
+  by default
+
 * Thu Jun 22 2017 Honza Horak <hhorak@redhat.com> - 3.0-3
 - Add syspath subpackage
 
