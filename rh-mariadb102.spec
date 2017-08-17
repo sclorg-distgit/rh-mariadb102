@@ -20,14 +20,14 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 1%{?dist}
+Release: 4%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
 Source1: LICENSE
 Requires: scl-utils
 Requires: %{?scl_prefix}mariadb-server
-BuildRequires: scl-utils-build help2man
+BuildRequires: scl-utils-build help2man scl-utils-build-helpers
 
 %description
 This is the main package for %{scl} Software Collection, which installs
@@ -54,7 +54,7 @@ Package shipping essential scripts to work with %{scl} Software Collection.
 %package build
 Summary: Package shipping basic build configuration
 Group: Applications/File
-Requires: scl-utils-build
+Requires: scl-utils-build scl-utils-build-helpers
 
 %description build
 Package shipping essential configuration macros to build %{scl} Software
@@ -66,6 +66,16 @@ Summary: Package shipping development files for %{scl}
 %description scldevel
 Package shipping development files, especially usefull for development of
 packages depending on %{scl} Software Collection.
+
+%if 0%{?scl_syspaths_metapackage:1}
+%scl_syspaths_metapackage
+Requires: %{?scl_prefix}mariadb-syspaths
+Requires: %{?scl_prefix}mariadb-config-syspaths
+Requires: %{?scl_prefix}mariadb-server-syspaths
+Requires: %{?scl_prefix}mariadb-server-utils-syspaths
+
+%scl_syspaths_metapackage_description
+%endif
 
 %prep
 %setup -c -T
@@ -117,7 +127,7 @@ export JAVACONFDIRS="%{_sysconfdir}/java\${JAVACONFDIRS:+:}\${JAVACONFDIRS:-}"
 # For XMvn to locate its configuration file(s)
 export XDG_CONFIG_DIRS="%{_sysconfdir}/xdg:\${XDG_CONFIG_DIRS:-/etc/xdg}"
 # For systemtap
-export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:%{_mandir}}"
+export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:%{_root_datadir}}"
 # For pkg-config
 export PKG_CONFIG_PATH="%{_libdir}/pkgconfig\${PKG_CONFIG_PATH:+:\${PKG_CONFIG_PATH}}"
 EOF
@@ -166,7 +176,19 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %doc LICENSE
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
+%{?scl_syspaths_metapackage:%files syspaths}
+
 %changelog
+* Fri Jun 23 2017 Honza Horak <hhorak@redhat.com> - 3.0-4
+- Require mariadb-server-utils-syspaths but not mariadb-server-galera-syspaths
+  by default
+
+* Thu Jun 22 2017 Honza Horak <hhorak@redhat.com> - 3.0-3
+- Add syspath subpackage
+
+* Mon Jun 05 2017 Honza Horak <hhorak@redhat.com> - 3.0-2
+- Fix XDG_DATA_DIRS definition
+
 * Fri Jun 02 2017 Honza Horak <hhorak@redhat.com> - 3.0-1
 - Bump release to 10.2
 
