@@ -20,7 +20,7 @@
 Summary: Package that installs %{scl}
 Name: %{scl}
 Version: 3.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2+
 Group: Applications/File
 Source0: README
@@ -142,6 +142,10 @@ EOF
 mkdir -p %{buildroot}%{_mandir}/man7/
 install -m 644 %{?scl_name}.7 %{buildroot}%{_mandir}/man7/%{?scl_name}.7
 
+# RHBZ#1487292 - missing ownership on some files
+mkdir -p %{buildroot}%{_libdir}/pkgconfig
+mkdir -p %{buildroot}%{_datadir}/selinux/packages/
+
 %post runtime
 # Simple copy of context from system root to SCL root.
 # In case new version needs some additional rules or context definition,
@@ -167,6 +171,10 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %doc README LICENSE
 %{?scl_files}
 %{_mandir}/man7/%{?scl_name}.*
+# RHBZ#1487292 - missing ownership on some files
+%dir %{_libdir}/pkgconfig
+%dir %{_datadir}/selinux/
+%dir %{_datadir}/selinux/packages/
 
 %files build
 %doc LICENSE
@@ -179,6 +187,10 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{?scl_syspaths_metapackage:%files syspaths}
 
 %changelog
+* Thu Sep 21 2017 Honza Horak <hhorak@redhat.com> - 3.0-5
+- Own directories to not leave them on uninstall
+  Resolves: #1487292
+
 * Fri Jun 23 2017 Honza Horak <hhorak@redhat.com> - 3.0-4
 - Require mariadb-server-utils-syspaths but not mariadb-server-galera-syspaths
   by default
